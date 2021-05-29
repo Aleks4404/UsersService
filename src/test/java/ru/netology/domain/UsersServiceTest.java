@@ -11,9 +11,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
 public class UsersServiceTest {
-    UsersService usersService = new UsersService("John");
-    UsersService usersService1 = new UsersService("Alice");
-    UsersService usersService2 = new UsersService("Melinda");
+
+    private UsersService usersService;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @BeforeClass
     public static void globalSetUp() {
@@ -44,22 +46,21 @@ public class UsersServiceTest {
     @Test
     public void whenRemoveUserWhenRemoveUserByName(){
         usersService.removeUser("Melinda");
-        List<UsersService.Users> usersList = usersService.getUsers();
+        List<Users> usersList = usersService.getUsers();
         assertThat(usersList.size(), is(2));
     }
 
     @Test
-    public void whenCreateNewUserWithoutNameThenThrowCustomFieldException(ExpectedException assertThrown) throws Exception {
-        assertThrown.expect(CustomFieldException.class);
-        assertThrown.expectMessage("Name could not be empty or null");
+    public void whenCreateNewUserWithoutNameThenThrowCustomFieldException() throws Exception {
+        thrown.expect(CustomFieldException.class);
+        thrown.expectMessage("Name could not be empty or null");
         usersService.createNewUser(null, LocalDate.of(1990, 2, 1));
     }
 
     @Test
     public void whenCreateNewUserWithoutDateOfBirthThenThrowCustomFieldException() throws Exception {
-        ExpectedException assertThrown = null;
-        assertThrown.expect(CustomFieldException.class);
-        assertThrown.expectMessage("Date of birth could not be null");
+        thrown.expect(CustomFieldException.class);
+        thrown.expectMessage("Date of birth could not be null");
         usersService.createNewUser("Dave", null);
     }
 
@@ -83,11 +84,5 @@ public class UsersServiceTest {
     @After
     public void afterMethod() {
         System.out.println("Code executes after each test method");
-    }
-
-    private class Users {
-        public Users(Object john, LocalDate of) {
-
-        }
     }
 }
